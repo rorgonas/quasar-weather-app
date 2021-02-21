@@ -1,5 +1,6 @@
 <template>
-  <q-page class="flex column">
+  <q-page class="flex column" :class="bgClass"
+  >
     <div class="col q-pt-lg q-px-md">
       <q-input
         @keyup.enter="getWeatherBySearch"
@@ -80,6 +81,13 @@ export default {
       isLoading: false,
     }
   },
+  computed: {
+    bgClass() {
+      debugger
+      const icon = this.weatherData ? this.weatherData.weather[0].icon : 'd';
+      return icon.endsWith('d') ? 'bg-day' : 'bg-night'
+    },
+  },
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition(position => {
@@ -123,7 +131,10 @@ export default {
 
 <style lang="sass">
   .q-page
-    background: linear-gradient(to top, #B06AB3, #4568DC)
+    &.bg-day
+      background: linear-gradient(to top, #B06AB3, #4568DC)
+    &.bg-night
+      background: linear-gradient(to top, #42275a, #734b6d)
   .bridge
     flex: 0 0 250px
     background: url(~assets/city-bridge.png) center bottom
