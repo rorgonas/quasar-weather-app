@@ -43,3 +43,6 @@ https://www.iconfinder.com
 
 ### Free IP Geolocation API
 https://freegeoip.app/
+
+### Electron build platform documentation API
+https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#platform
