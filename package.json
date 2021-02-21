@@ -10,6 +10,7 @@
     "dev": "quasar dev",
     "electron": "quasar dev -m electron",
     "build": "quasar build",
+    "build:electron": "quasar build -m electron",
     "icons": "icongenie generate -i app-icon.png --theme-color B06AB3 --skip-trim"
   },
   "dependencies": {
@@ -23,7 +24,8 @@
     "devtron": "^1.4.0",
     "electron": "^9.4.3",
     "electron-debug": "^3.2.0",
-    "electron-devtools-installer": "^3.1.1"
+    "electron-devtools-installer": "^3.1.1",
+    "electron-packager": "^14.2.1"
   },
   "browserslist": [
     "last 10 Chrome versions",
