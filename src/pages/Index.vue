@@ -88,39 +88,47 @@ export default {
     },
   },
   methods: {
-    getLocation() {
-      navigator.geolocation.getCurrentPosition(position => {
-        this.getWeatherByCoords(position.coords)
-      })
+    async getLocation() {
+      if (this.$q.platform.is.electron) {
+        try {
+          const myLocation = await this.$axios.get('https://freegeoip.app/json/')
+          await this.getWeatherByCoords({
+            lat: myLocation.data.latitude,
+            long: myLocation.data.longitude
+          })
+        } catch (e) {
+          console.log('Unable to identify your location!')
+        }
+
+      } else {
+        navigator.geolocation.getCurrentPosition(position => {
+          this.getWeatherByCoords({
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+          })
+        })
+      }
     },
-    async getWeatherByCoords(coords) {
-      // const data = this.$q.localStorage.getItem('weatherData')
-      // if (!data) {
+    async getWeatherByCoords(options) {
       this.isLoading = true;
       try {
-        const response = await this.$axios.get(`${OPEN_WEATHER_API_URL}?lat=${coords.latitude}&lon=${coords.longitude}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`)
-        // this.$q.localStorage.set('weatherData', response.data)
+        const response = await this.$axios.get(`${OPEN_WEATHER_API_URL}?lat=${options.lat}&lon=${options.long}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`)
         this.weatherData = response.data
         this.isLoading = false;
       } catch (e) {
-        console.log('Ups! Please try again')
+        console.log('Unable to get weather data')
         this.isLoading = false;
       }
-
-      // } else {
-      //   this.weatherData = data
-      // }
     },
     async getWeatherBySearch() {
       this.isLoading = true;
       try {
         const response = await this.$axios.get(`${OPEN_WEATHER_API_URL}?q=${this.search}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`)
-        // this.$q.localStorage.set('weatherData', response.data)
         this.weatherData = response.data
         this.search = ''
         this.isLoading = false;
       } catch (e) {
-        console.log('Ups! Please try again')
+        console.log('Unable to get weather data')
         this.isLoading = false;
       }
     }

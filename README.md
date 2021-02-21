@@ -40,3 +40,6 @@ https://pixabay.com/
 
 ### Free icon repo
 https://www.iconfinder.com
+
+### Free IP Geolocation API
+https://freegeoip.app/
