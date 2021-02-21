@@ -83,7 +83,6 @@ export default {
   },
   computed: {
     bgClass() {
-      debugger
       const icon = this.weatherData ? this.weatherData.weather[0].icon : 'd';
       return icon.endsWith('d') ? 'bg-day' : 'bg-night'
     },
