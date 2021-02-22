@@ -44,7 +44,7 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        OPEN_WEATHER_API_KEY: '1d19909de648ef4baaa0d5feb2ef87f8',
+        OPEN_WEATHER_API_KEY: '',
       },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
@@ -71,7 +71,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: true,
+      https: true, // default: 'false' @Note: when set to false geolocation has error in android, when set to true app crash & not launch
       port: 8080,
       open: true // opens browser window automatically
     },
