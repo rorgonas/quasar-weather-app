@@ -42,16 +42,13 @@
       </div>
       <div class="col text-center">
         <q-avatar size="100px">
-          <img :src="`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`" :alt="weatherData.weather[0].description">
+          <img :src="`${imgUrl}/${weatherData.weather[0].icon}@2x.png`" :alt="weatherData.weather[0].description">
         </q-avatar>
       </div>
     </template>
 
     <template v-else>
-      <div v-if="isLoading" class="col fixed-center">
-        <q-spinner-puff color="purple" size="5.5em"/>
-      </div>
-      <div v-else class="col column text-center text-white">
+      <div class="col column text-center text-white">
         <div class="col text-h2 text-weight-thin">
           Quasar<br>Weather
         </div>
@@ -70,7 +67,9 @@
 </template>
 
 <script>
-const OPEN_WEATHER_API_URL = 'http://api.openweathermap.org/data/2.5/weather';
+const OPEN_WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const OPEN_WEATHER_IMG_URL = 'https://openweathermap.org/img/wn';
+const GEO_IP_URL = 'https://freegeoip.app/json/'
 
 export default {
   name: 'PageIndex',
@@ -79,6 +78,7 @@ export default {
       search: '',
       weatherData: null,
       isLoading: false,
+      imgUrl: OPEN_WEATHER_IMG_URL
     }
   },
   computed: {
@@ -89,47 +89,72 @@ export default {
   },
   methods: {
     async getLocation() {
+      this.$q.loading.show()
       if (this.$q.platform.is.electron) {
         try {
-          const myLocation = await this.$axios.get('https://freegeoip.app/json/')
-          await this.getWeatherByCoords({
+          const myLocation = await this.$axios.get(GEO_IP_URL)
+          await this.startLocation({
             lat: myLocation.data.latitude,
             long: myLocation.data.longitude
           })
-        } catch (e) {
-          console.log('Unable to identify your location!')
+        } catch (err) {
+          this.$q.loading.hide()
+          this.$q.dialog({
+            title: 'Error',
+            message: `${err}. Unable to identify your location.`
+          })
         }
 
       } else {
-        navigator.geolocation.getCurrentPosition(position => {
-          this.getWeatherByCoords({
+        let success = async (position) => {
+          await this.startLocation({
             lat: position.coords.latitude,
             long: position.coords.longitude
           })
-        })
+        }
+        let error = (err) => {
+          this.$q.loading.hide()
+          this.$q.dialog({
+            title: 'Error',
+            message: `${err}. Unable to identify your location.`
+          })
+        }
+
+        let options = {
+          timeout: 30000,
+          enableHighAccuracy: true
+        }
+
+        navigator.geolocation.getCurrentPosition(success, error, options)
       }
     },
-    async getWeatherByCoords(options) {
-      this.isLoading = true;
+    async startLocation(options) {
       try {
         const response = await this.$axios.get(`${OPEN_WEATHER_API_URL}?lat=${options.lat}&lon=${options.long}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`)
         this.weatherData = response.data
-        this.isLoading = false;
-      } catch (e) {
-        console.log('Unable to get weather data')
-        this.isLoading = false;
+        this.$q.loading.hide()
+      } catch (err) {
+        this.$q.dialog({
+          title: 'Error',
+          message: `${err}. Unable to identify your location.`
+        })
+        this.$q.loading.hide()
       }
     },
     async getWeatherBySearch() {
-      this.isLoading = true;
       try {
+        this.$q.loading.show()
         const response = await this.$axios.get(`${OPEN_WEATHER_API_URL}?q=${this.search}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`)
         this.weatherData = response.data
         this.search = ''
-        this.isLoading = false;
-      } catch (e) {
-        console.log('Unable to get weather data')
-        this.isLoading = false;
+        this.$q.loading.hide()
+      } catch (err) {
+        this.$q.dialog({
+          title: 'Error',
+          message: `${err}. Unable to identify your location.`
+        })
+        this.search = ''
+        this.$q.loading.hide()
       }
     }
   },
