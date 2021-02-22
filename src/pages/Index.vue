@@ -77,7 +77,6 @@ export default {
     return {
       search: '',
       weatherData: null,
-      isLoading: false,
       imgUrl: OPEN_WEATHER_IMG_URL
     }
   },
@@ -125,6 +124,7 @@ export default {
           enableHighAccuracy: true
         }
 
+        // @todo: Could be replaced by 'https://freegeoip.app/json/' if not consistent cross platform
         navigator.geolocation.getCurrentPosition(success, error, options)
       }
     },
